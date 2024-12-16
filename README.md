@@ -1,4 +1,10 @@
-# IBM Cloud Observability solution
+# EXPERIMENTAL - IBM Cloud Observability solution
+
+
+> ⚠️ **Warning**
+> Go to https://github.com/terraform-ibm-modules/terraform-ibm-observability-da for the released graduated version of this module.
+> This repository is used for experimental features.
+
 
 [![Stable (With quality checks)](https://img.shields.io/badge/Status-Stable%20(With%20quality%20checks)-green)](https://terraform-ibm-modules.github.io/documentation/#/badge-status)
 [![latest release](https://img.shields.io/github/v/release/terraform-ibm-modules/terraform-ibm-observability-da?logo=GitHub&sort=semver)](https://github.com/terraform-ibm-modules/terraform-ibm-observability-da/releases/latest)
