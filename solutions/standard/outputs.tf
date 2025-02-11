@@ -29,9 +29,30 @@ output "cloud_logs_name" {
   description = "The name of the provisioned Cloud Logs instance."
 }
 
+output "cloud_logs_resource_group_id" {
+  value       = var.cloud_logs_provision ? module.observability_instance.cloud_logs_resource_group_id : null
+  description = "The resource group where Cloud Logs instance resides."
+}
+
+output "cloud_logs_ingress_endpoint" {
+  value       = var.cloud_logs_provision ? module.observability_instance.cloud_logs_ingress_endpoint : null
+  description = "The public ingress endpoint of the provisioned Cloud Logs instance."
+}
+
+output "cloud_logs_ingress_private_endpoint" {
+  value       = var.cloud_logs_provision ? module.observability_instance.cloud_logs_ingress_private_endpoint : null
+  description = "The private ingress endpoint of the provisioned Cloud Logs instance."
+}
+
+## Cloud logs policies
+output "logs_policies_details" {
+  value       = length(var.cloud_logs_policies) > 0 ? module.observability_instance.logs_policies_details : null
+  description = "The details of the Cloud logs policies created."
+}
+
 ## Cloud Monitoring
 output "cloud_monitoring_name" {
-  value       = var.cloud_monitoring_provision ? module.observability_instance.cloud_monitoring_name : null
+  value       = var.cloud_monitoring_provision ? module.observability_instance.cloud_monitoring_name : (var.existing_cloud_monitoring_crn != null ? module.cloud_monitoring_crn_parser[0].service_name : null)
   description = "The name of the provisioned IBM cloud monitoring instance."
 }
 
@@ -41,7 +62,7 @@ output "cloud_monitoring_crn" {
 }
 
 output "cloud_monitoring_guid" {
-  value       = var.cloud_monitoring_provision ? module.observability_instance.cloud_monitoring_guid : local.existing_cloud_monitoring_guid
+  value       = var.cloud_monitoring_provision ? module.observability_instance.cloud_monitoring_guid : var.existing_cloud_monitoring_crn != null ? module.cloud_monitoring_crn_parser[0].service_instance : null
   description = "The guid of the provisioned IBM cloud monitoring instance."
 }
 
@@ -113,4 +134,16 @@ output "kms_key_rings" {
 output "kms_keys" {
   description = "IDs of new KMS Keys created"
   value       = length(module.kms) > 0 ? module.kms[0].keys : null
+}
+
+## Metrics Routing
+
+output "metrics_router_targets" {
+  description = "The map of created metrics routing targets."
+  value       = var.enable_metrics_routing_to_cloud_monitoring ? module.observability_instance.metrics_router_targets : null
+}
+
+output "metrics_router_routes" {
+  description = "The map of created metrics routing routes."
+  value       = var.enable_metrics_routing_to_cloud_monitoring ? module.observability_instance.metrics_router_routes : null
 }

@@ -78,36 +78,6 @@
               ]
             }
           ],
-          "architecture": {
-            "features": [
-              {
-                "title": "Creates a Cloud Logs instance",
-                "description": "Creates and configures the IBM Cloud Logs instance."
-              },
-              {
-                "title": "Creates and configures the IBM Cloud Monitoring instance.",
-                "description": "Creates a Monitoring instance"
-              },
-              {
-                "title": "Creates KMS-encrypted Object Storage buckets for log files and Activity Tracker events",
-                "description": "Creates and configures the IBM Cloud Object Storage buckets with archiving and expiration enabled."
-              },
-              {
-                "title": "Creates an IBM Cloud Activity Tracker event route to an Object Storage bucket and Cloud Logs target",
-                "description": "Creates and configures the IBM Cloud Activity Tracker Event Routing to an IBM Cloud Object Storage bucket and IBM Cloud Logs target."
-              }
-            ],
-            "diagrams": [
-              {
-                "diagram": {
-                  "url": "https://raw.githubusercontent.com/terraform-ibm-modules/terraform-ibm-observability-da/main/reference-architecture/deployable-architecture-observability-instances.svg",
-                  "caption": "Observability instances on IBM Cloud",
-                  "type": "image/svg+xml"
-                },
-                "description": "This architecture supports creating and configuring IBM Cloud Observability instances and IBM Cloud Activity Tracker Event Routing to an Object Storage bucket and Cloud Logs instance."
-              }
-            ]
-          },
           "dependencies": [
             {
               "name": "testing-deploy-arch-ibm-kms",
@@ -155,28 +125,47 @@
               "required": true
             },
             {
-              "key": "prefix",
-              "required": true
+              "key": "provider_visibility",
+              "options": [
+                {
+                  "displayname": "private",
+                  "value": "private"
+                },
+                {
+                  "displayname": "public",
+                  "value": "public"
+                },
+                {
+                  "displayname": "public-and-private",
+                  "value": "public-and-private"
+                }
+              ]
             },
             {
-              "key": "resource_group_name",
-              "required": false
+              "key": "prefix",
+              "required": true
             },
             {
               "key": "use_existing_resource_group",
               "required": false
             },
             {
-              "key": "region",
-              "required": true,
+              "key": "resource_group_name",
+              "required": false
+            },
+            {
               "custom_config": {
-                "type": "vpc_region",
+                "type": "region",
                 "grouping": "deployment",
                 "original_grouping": "deployment",
                 "config_constraints": {
-                  "generationType": "2"
+                  "showKinds": [
+                    "region"
+                  ]
                 }
-              }
+              },
+              "key": "region",
+              "required": true
             },
             {
               "key": "cloud_logs_provision",
@@ -296,6 +285,14 @@
             },
             {
               "key": "cos_instance_access_tags",
+              "required": false
+            },
+            {
+              "key": "at_cos_bucket_retention_policy",
+              "required": false
+            },
+            {
+              "key": "cloud_log_data_bucket_retention_policy",
               "required": false
             },
             {
@@ -539,113 +536,43 @@
               }
             },
             {
-              "key": "cos_resource_group_name",
-              "required": false
+              "key": "enable_metrics_routing_to_cloud_monitoring"
             },
             {
-              "key": "enable_platform_metrics",
-              "required": false
-            },
-            {
-              "key": "ibmcloud_cos_api_key",
-              "required": false
-            },
-            {
-              "key": "ibmcloud_kms_api_key",
-              "required": false
-            },
-            {
-              "key": "manage_log_archive_cos_bucket",
-              "required": false
+              "key": "metrics_router_routes"
             }
           ],
-          "outputs": [
-            {
-              "key": "cloud_logs_name",
-              "description": "The name of the provisioned Cloud Logs instance."
-            },
-            {
-              "key": "cos_instance_crn",
-              "description": "COS instance crn"
-            },
-            {
-              "key": "cloud_monitoring_guid",
-              "description": "The guid of the provisioned IBM cloud monitoring instance."
-            },
-            {
-              "key": "at_targets",
-              "description": "The map of created activity_tracker targets"
-            },
-            {
-              "key": "at_routes",
-              "description": "The map of created activity_tracker routes"
-            },
-            {
-              "key": "cloud_logs_guid",
-              "description": "The guid of the provisioned Cloud Logs instance."
-            },
-            {
-              "key": "cloud_log_data_bucket_name",
-              "description": "The name of the Cloud logs data COS bucket"
-            },
-            {
-              "key": "log_archive_cos_bucket_name",
-              "description": "The name of log archive COS bucket"
-            },
-            {
-              "key": "resource_group_name",
-              "description": "The name of the Resource Group the instances are provisioned in."
-            },
-            {
-              "key": "cos_instance_name",
-              "description": "COS instance name"
-            },
-            {
-              "key": "cloud_logs_crn",
-              "description": "The id of the provisioned Cloud Logs instance."
-            },
-            {
-              "key": "kms_keys",
-              "description": "IDs of new KMS Keys created"
-            },
-            {
-              "key": "cos_instance_id",
-              "description": "COS instance id"
-            },
-            {
-              "key": "cos_instance_guid",
-              "description": "COS instance guid"
-            },
-            {
-              "key": "cloud_monitoring_access_key",
-              "description": "IBM cloud monitoring access key for agents to use"
-            },
-            {
-              "key": "resource_group_id",
-              "description": "The ID of the Resource Group the instances are provisioned in."
-            },
-            {
-              "key": "kms_key_rings",
-              "description": "IDs of new KMS Key Rings created"
-            },
-            {
-              "key": "at_cos_target_bucket_name",
-              "description": "The name of the AT target COS bucket"
-            },
-            {
-              "key": "cloud_monitoring_name",
-              "description": "The name of the provisioned IBM cloud monitoring instance."
-            },
-            {
-              "key": "cloud_monitoring_crn",
-              "description": "The id of the provisioned IBM cloud monitoring instance."
-            },
-            {
-              "key": "cloud_log_metrics_bucket_name",
-              "description": "The name of the Cloud logs metrics COS bucket"
-            }
-          ],
-          "install_type": "extension"
+          "architecture": {
+            "descriptions": "This architecture supports the deployment of IBM Cloud Monitoring and Cloud Logs instances on IBM Cloud. It also supports the deployment of IBM Cloud Activity Tracker Event Routing to an Object Storage bucket and Cloud Logs target.",
+            "features": [
+              {
+                "title": "Creates a Cloud Logs instance",
+                "description": "Creates and configures the IBM Cloud Logs instance."
+              },
+              {
+                "description": "Creates a Monitoring instance",
+                "title": "Creates and configures the IBM Cloud Monitoring instance."
+              },
+              {
+                "title": "Creates KMS-encrypted Object Storage buckets for log files and Activity Tracker events",
+                "description": "Creates and configures the IBM Cloud Object Storage buckets with archiving and expiration enabled."
+              },
+              {
+                "title": "Creates an IBM Cloud Activity Tracker event route to an Object Storage bucket and Cloud Logs target",
+                "description": "Creates and configures the IBM Cloud Activity Tracker Event Routing to an IBM Cloud Object Storage bucket and IBM Cloud Logs target."
+              }
+            ],
+            "diagrams": [
+              {
+                "diagram": {
+                  "caption": "Observability instances on IBM Cloud",
+                  "url": "https://raw.githubusercontent.com/terraform-ibm-modules/terraform-ibm-observability-da/main/reference-architecture/deployable-architecture-observability-instances.svg",
+                  "type": "image/svg+xml"
+                },
+                "description": "This architecture supports creating and configuring IBM Cloud Observability instances and IBM Cloud Activity Tracker Event Routing to an Object Storage bucket and Cloud Logs instance."
+              }
+            ]
+          }
         }
       ]
     }
