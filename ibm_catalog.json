@@ -16,7 +16,7 @@
         {
           "label": "Standard",
           "name": "standard",
-          "working_directory": "solutions/standard",
+          "working_directory": "solutions/instances",
           "licenses": [
             {
               "id": "LICENSE",
