@@ -273,6 +273,9 @@
               "required": false,
               "options": [
                 {
+                  "displayname": "NULL",
+                  "value": "__NULL__"
+                }, {
                   "displayname": "au-syd",
                   "value": "au-syd"
                 },{
