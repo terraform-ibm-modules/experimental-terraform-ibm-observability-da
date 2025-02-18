@@ -271,14 +271,42 @@
             {
               "key": "cos_region",
               "required": false,
-              "custom_config": {
-                "type": "vpc_region",
-                "grouping": "deployment",
-                "original_grouping": "deployment",
-                "config_constraints": {
-                  "generationType": "2"
+              "options": [
+                {
+                  "displayname": "au-syd",
+                  "value": "au-syd"
+                },{
+                  "displayname": "br-sao",
+                  "value": "br-sao"
+                },{
+                  "displayname": "ca-tor",
+                  "value": "ca-tor"
+                },{
+                  "displayname": "eu-de",
+                  "value": "eu-de"
+                },{
+                  "displayname": "eu-es",
+                  "value": "eu-es"
+                },{
+                  "displayname": "eu-fr2",
+                  "value": "eu-fr2"
+                },{
+                  "displayname": "eu-gb",
+                  "value": "eu-gb"
+                },{
+                  "displayname": "jp-osa",
+                  "value": "jp-osa"
+                },{
+                  "displayname": "jp-tok",
+                  "value": "jp-tok"
+                },{
+                  "displayname": "us-east",
+                  "value": "us-east"
+                },{
+                  "displayname": "us-south",
+                  "value": "us-south"
                 }
-              }
+              ]
             },
             {
               "key": "cos_instance_tags",
@@ -512,11 +540,13 @@
             },
             {
               "key": "ibmcloud_cos_api_key",
-              "required": false
+              "required": false,
+              "default_value": "__NULL__"
             },
             {
               "key": "ibmcloud_kms_api_key",
-              "required": false
+              "required": false,
+              "default_value": "__NULL__"
             },
             {
               "key": "kms_endpoint_type",
