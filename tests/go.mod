@@ -1,4 +1,4 @@
-module github.com/terraform-ibm-modules/terraform-ibm-observability-da
+module github.com/terraform-ibm-modules/experimental-terraform-ibm-observability-da
 
 go 1.22.0
 
