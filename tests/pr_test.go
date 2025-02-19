@@ -24,7 +24,7 @@ import (
 const yamlLocation = "../common-dev-assets/common-go-assets/common-permanent-resources.yaml"
 const resourceGroup = "geretain-test-observability-instances"
 
-const solutionInstanceDADir = "solutions/instances"
+const solutionInstanceDADir = "solutions/standard"
 
 // Currently only including regions that Event Notification support
 var validRegions = []string{
