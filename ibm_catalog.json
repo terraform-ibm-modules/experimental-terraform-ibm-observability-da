@@ -710,6 +710,9 @@
                   "dependency_output": "kms_instance_crn",
                   "version_input": "existing_kms_instance_crn"
                 }
+              ],
+              "ignore_auto_referencing": [
+                "*"
               ]
             },
             {
@@ -731,6 +734,9 @@
                   "value": true,
                   "version_input": "use_existing_resource_group"
                 }
+              ],
+              "ignore_auto_referencing": [
+                "*"
               ]
             }
           ],
