@@ -273,7 +273,7 @@
               "required": false,
               "options": [
                 {
-                  "displayname": "NULL (default region will be used.)",
+                  "displayname": "Use Observability Instances Region",
                   "value": "__NULL__"
                 }, {
                   "displayname": "au-syd",
