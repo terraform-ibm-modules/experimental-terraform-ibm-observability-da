@@ -273,7 +273,7 @@
               "required": false,
               "options": [
                 {
-                  "displayname": "NULL (region will be used)",
+                  "displayname": "NULL (default region will be used.)",
                   "value": "__NULL__"
                 }, {
                   "displayname": "au-syd",
