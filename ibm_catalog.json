@@ -6,7 +6,22 @@
       "product_kind": "solution",
       "tags": [
         "ibm_created",
-        "logging_monitoring"
+        "target_terraform",
+        "terraform",
+        "logging_monitoring",
+        "solution"
+      ],
+      "keywords": [
+        "IaC",
+        "infrastructure as code",
+        "terraform",
+        "solution",
+        "observability",
+        "observability instances",
+        "cloud logs",
+        "cloud monitoring",
+        "ATracker",
+        "observability agents"
       ],
       "short_description": "Configures IBM Cloud Observability resources",
       "long_description": "Solutions that support configuring IBM Cloud Observability resources for logging, monitoring, and activity tracking.",
@@ -78,108 +93,63 @@
               ]
             }
           ],
-          "architecture": {
-            "features": [
-              {
-                "title": "Creates a Cloud Logs instance",
-                "description": "Creates and configures the IBM Cloud Logs instance."
-              },
-              {
-                "title": "Creates and configures the IBM Cloud Monitoring instance.",
-                "description": "Creates a Monitoring instance"
-              },
-              {
-                "title": "Creates KMS-encrypted Object Storage buckets for log files and Activity Tracker events",
-                "description": "Creates and configures the IBM Cloud Object Storage buckets with archiving and expiration enabled."
-              },
-              {
-                "title": "Creates an IBM Cloud Activity Tracker event route to an Object Storage bucket and Cloud Logs target",
-                "description": "Creates and configures the IBM Cloud Activity Tracker Event Routing to an IBM Cloud Object Storage bucket and IBM Cloud Logs target."
-              }
-            ],
-            "diagrams": [
-              {
-                "diagram": {
-                  "url": "https://raw.githubusercontent.com/terraform-ibm-modules/terraform-ibm-observability-da/main/reference-architecture/deployable-architecture-observability-instances.svg",
-                  "caption": "Observability instances on IBM Cloud",
-                  "type": "image/svg+xml"
-                },
-                "description": "This architecture supports creating and configuring IBM Cloud Observability instances and IBM Cloud Activity Tracker Event Routing to an Object Storage bucket and Cloud Logs instance."
-              }
-            ]
-          },
-          "dependencies": [
-            {
-              "name": "testing-deploy-arch-ibm-kms",
-              "id": "85fdbd7a-8c77-4abd-b716-653a31f3aba9-global",
-              "version": ">=1.0.5",
-              "flavors": [
-                "standard"
-              ],
-              "catalog_id": "7a4d68b4-cf8b-40cd-a3d1-f49aff526eb3",
-              "optional": true,
-              "on_by_default": true,
-              "input_mapping": [
-                {
-                  "dependency_output": "kms_instance_crn",
-                  "version_input": "existing_kms_instance_crn"
-                }
-              ]
-            },
-            {
-              "name": "deploy-arch-ibm-account-infra-base",
-              "id": "63641cec-6093-4b4f-b7b0-98d2f4185cd6-global",
-              "version": ">=v1.16.1",
-              "flavors": [
-                "standard"
-              ],
-              "catalog_id": "7a4d68b4-cf8b-40cd-a3d1-f49aff526eb3",
-              "optional": true,
-              "on_by_default": true,
-              "input_mapping": [
-                {
-                  "dependency_output": "workload_resource_group_name",
-                  "version_input": "resource_group_name"
-                },
-                {
-                  "value": true,
-                  "version_input": "use_existing_resource_group"
-                }
-              ]
-            }
-          ],
-          "dependency_version_2": true,
           "configuration": [
             {
               "key": "ibmcloud_api_key",
               "required": true
             },
             {
-              "key": "prefix",
-              "required": true
+              "key": "provider_visibility",
+              "required": false,
+              "options": [
+                {
+                  "displayname": "private",
+                  "value": "private"
+                },
+                {
+                  "displayname": "public",
+                  "value": "public"
+                },
+                {
+                  "displayname": "public-and-private",
+                  "value": "public-and-private"
+                }
+              ]
             },
             {
-              "key": "resource_group_name",
-              "required": false
+              "key": "prefix",
+              "description": "Prefix to add to all resources created by this solution. To not use any prefix value, you can enter the string `__NULL__`.",
+              "default_value": "dev",
+              "required": true
             },
             {
               "key": "use_existing_resource_group",
               "required": false
             },
             {
-              "key": "region",
-              "required": true,
+              "key": "resource_group_name",
+              "required": false
+            },
+            {
               "custom_config": {
-                "type": "vpc_region",
+                "type": "region",
                 "grouping": "deployment",
                 "original_grouping": "deployment",
                 "config_constraints": {
-                  "generationType": "2"
+                  "showKinds": [
+                    "region"
+                  ]
                 }
-              }
+              },
+              "key": "region",
+              "required": true
             },
             {
               "key": "cloud_logs_provision",
+              "required": false
+            },
+            {
+              "key": "cloud_logs_policies",
               "required": false
             },
             {
@@ -192,6 +162,10 @@
             },
             {
               "key": "cloud_logs_access_tags",
+              "required": false
+            },
+            {
+              "key": "manage_log_archive_cos_bucket",
               "required": false
             },
             {
@@ -287,8 +261,55 @@
               "required": false
             },
             {
+              "key": "cos_resource_group_name",
+              "required": false
+            },
+            {
               "key": "cos_instance_name",
               "required": false
+            },
+            {
+              "key": "cos_region",
+              "required": false,
+              "options": [
+                {
+                  "displayname": "Use Observability Instances Region",
+                  "value": "__NULL__"
+                }, {
+                  "displayname": "au-syd",
+                  "value": "au-syd"
+                },{
+                  "displayname": "br-sao",
+                  "value": "br-sao"
+                },{
+                  "displayname": "ca-tor",
+                  "value": "ca-tor"
+                },{
+                  "displayname": "eu-de",
+                  "value": "eu-de"
+                },{
+                  "displayname": "eu-es",
+                  "value": "eu-es"
+                },{
+                  "displayname": "eu-fr2",
+                  "value": "eu-fr2"
+                },{
+                  "displayname": "eu-gb",
+                  "value": "eu-gb"
+                },{
+                  "displayname": "jp-osa",
+                  "value": "jp-osa"
+                },{
+                  "displayname": "jp-tok",
+                  "value": "jp-tok"
+                },{
+                  "displayname": "us-east",
+                  "value": "us-east"
+                },{
+                  "displayname": "us-south",
+                  "value": "us-south"
+                }
+              ]
             },
             {
               "key": "cos_instance_tags",
@@ -296,6 +317,14 @@
             },
             {
               "key": "cos_instance_access_tags",
+              "required": false
+            },
+            {
+              "key": "at_cos_bucket_retention_policy",
+              "required": false
+            },
+            {
+              "key": "cloud_log_data_bucket_retention_policy",
               "required": false
             },
             {
@@ -513,6 +542,16 @@
               "required": false
             },
             {
+              "key": "ibmcloud_cos_api_key",
+              "required": false,
+              "default_value": "__NULL__"
+            },
+            {
+              "key": "ibmcloud_kms_api_key",
+              "required": false,
+              "default_value": "__NULL__"
+            },
+            {
               "key": "kms_endpoint_type",
               "required": false,
               "options": [
@@ -527,35 +566,15 @@
               ]
             },
             {
-              "key": "cos_region",
-              "required": false,
-              "custom_config": {
-                "type": "vpc_region",
-                "grouping": "deployment",
-                "original_grouping": "deployment",
-                "config_constraints": {
-                  "generationType": "2"
-                }
-              }
-            },
-            {
-              "key": "cos_resource_group_name",
-              "required": false
-            },
-            {
               "key": "enable_platform_metrics",
               "required": false
             },
             {
-              "key": "ibmcloud_cos_api_key",
+              "key": "enable_metrics_routing_to_cloud_monitoring",
               "required": false
             },
             {
-              "key": "ibmcloud_kms_api_key",
-              "required": false
-            },
-            {
-              "key": "manage_log_archive_cos_bucket",
+              "key": "metrics_router_routes",
               "required": false
             }
           ],
@@ -645,7 +664,83 @@
               "description": "The name of the Cloud logs metrics COS bucket"
             }
           ],
-          "install_type": "extension"
+          "architecture": {
+            "features": [
+              {
+                "title": "Creates a Cloud Logs instance",
+                "description": "Creates and configures the IBM Cloud Logs instance."
+              },
+              {
+                "title": "Creates and configures the IBM Cloud Monitoring instance.",
+                "description": "Creates a Monitoring instance"
+              },
+              {
+                "title": "Creates KMS-encrypted Object Storage buckets for log files and Activity Tracker events",
+                "description": "Creates and configures the IBM Cloud Object Storage buckets with archiving and expiration enabled."
+              },
+              {
+                "title": "Creates an IBM Cloud Activity Tracker event route to an Object Storage bucket and Cloud Logs target",
+                "description": "Creates and configures the IBM Cloud Activity Tracker Event Routing to an IBM Cloud Object Storage bucket and IBM Cloud Logs target."
+              }
+            ],
+            "diagrams": [
+              {
+                "diagram": {
+                  "url": "https://raw.githubusercontent.com/terraform-ibm-modules/terraform-ibm-observability-da/main/reference-architecture/deployable-architecture-observability-instances.svg",
+                  "caption": "Observability instances on IBM Cloud",
+                  "type": "image/svg+xml"
+                },
+                "description": "This architecture supports creating and configuring IBM Cloud Observability instances and IBM Cloud Activity Tracker Event Routing to an Object Storage bucket and Cloud Logs instance."
+              }
+            ]
+          },
+          "dependencies": [
+            {
+              "name": "testing-deploy-arch-ibm-kms",
+              "id": "85fdbd7a-8c77-4abd-b716-653a31f3aba9-global",
+              "version": "^1.0.5",
+              "flavors": [
+                "standard"
+              ],
+              "catalog_id": "7a4d68b4-cf8b-40cd-a3d1-f49aff526eb3",
+              "optional": true,
+              "on_by_default": true,
+              "input_mapping": [
+                {
+                  "dependency_output": "kms_instance_crn",
+                  "version_input": "existing_kms_instance_crn"
+                }
+              ],
+              "ignore_auto_referencing": [
+                "*"
+              ]
+            },
+            {
+              "name": "deploy-arch-ibm-account-infra-base",
+              "id": "63641cec-6093-4b4f-b7b0-98d2f4185cd6-global",
+              "version": ">=v1.16.1",
+              "flavors": [
+                "standard"
+              ],
+              "catalog_id": "7a4d68b4-cf8b-40cd-a3d1-f49aff526eb3",
+              "optional": true,
+              "on_by_default": true,
+              "input_mapping": [
+                {
+                  "dependency_output": "workload_resource_group_name",
+                  "version_input": "resource_group_name"
+                },
+                {
+                  "value": true,
+                  "version_input": "use_existing_resource_group"
+                }
+              ],
+              "ignore_auto_referencing": [
+                "*"
+              ]
+            }
+          ],
+          "dependency_version_2": true
         }
       ]
     }
