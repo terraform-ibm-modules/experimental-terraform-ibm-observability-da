@@ -720,6 +720,16 @@
                 {
                   "dependency_output": "kms_instance_crn",
                   "version_input": "existing_kms_instance_crn"
+                },
+                {
+                  "dependency_input": "prefix",
+                  "version_input": "prefix",
+                  "reference_version": true
+                },
+                {
+                  "dependency_input": "region",
+                  "version_input": "region",
+                  "reference_version": true
                 }
               ],
               "ignore_auto_referencing": [
@@ -744,6 +754,11 @@
                 {
                   "value": true,
                   "version_input": "use_existing_resource_group"
+                },
+                {
+                  "dependency_input": "prefix",
+                  "version_input": "prefix",
+                  "reference_version": true
                 }
               ],
               "ignore_auto_referencing": [
