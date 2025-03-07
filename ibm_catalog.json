@@ -91,6 +91,17 @@
               "key": "ibmcloud_api_key",
               "required": true
             },
+
+            {
+              "key": "enable_platform_metrics",
+              "required": false,
+              "default_value": false
+            },
+            {
+              "key": "enable_platform_logs",
+              "required": false,
+              "default_value": false
+            },
             {
               "key": "provider_visibility",
               "required": false,
@@ -185,10 +196,6 @@
                   "value": "90"
                 }
               ]
-            },
-            {
-              "key": "enable_platform_logs",
-              "required": false
             },
             {
               "key": "logs_routing_tenant_regions",
@@ -567,10 +574,6 @@
                   "value": "private"
                 }
               ]
-            },
-            {
-              "key": "enable_platform_metrics",
-              "required": false
             },
             {
               "key": "enable_metrics_routing_to_cloud_monitoring",
