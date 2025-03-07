@@ -275,37 +275,48 @@
                 {
                   "displayname": "Use Observability Instances Region",
                   "value": "__NULL__"
-                }, {
+                },
+                {
                   "displayname": "au-syd",
                   "value": "au-syd"
-                },{
+                },
+                {
                   "displayname": "br-sao",
                   "value": "br-sao"
-                },{
+                },
+                {
                   "displayname": "ca-tor",
                   "value": "ca-tor"
-                },{
+                },
+                {
                   "displayname": "eu-de",
                   "value": "eu-de"
-                },{
+                },
+                {
                   "displayname": "eu-es",
                   "value": "eu-es"
-                },{
+                },
+                {
                   "displayname": "eu-fr2",
                   "value": "eu-fr2"
-                },{
+                },
+                {
                   "displayname": "eu-gb",
                   "value": "eu-gb"
-                },{
+                },
+                {
                   "displayname": "jp-osa",
                   "value": "jp-osa"
-                },{
+                },
+                {
                   "displayname": "jp-tok",
                   "value": "jp-tok"
-                },{
+                },
+                {
                   "displayname": "us-east",
                   "value": "us-east"
-                },{
+                },
+                {
                   "displayname": "us-south",
                   "value": "us-south"
                 }
@@ -698,7 +709,7 @@
             {
               "name": "testing-deploy-arch-ibm-kms",
               "id": "85fdbd7a-8c77-4abd-b716-653a31f3aba9-global",
-              "version": "^1.0.5",
+              "version": "^v1.2.1",
               "flavors": [
                 "standard"
               ],
@@ -718,7 +729,7 @@
             {
               "name": "deploy-arch-ibm-account-infra-base",
               "id": "63641cec-6093-4b4f-b7b0-98d2f4185cd6-global",
-              "version": ">=v1.16.1",
+              "version": "^v1.19.0",
               "flavors": [
                 "standard"
               ],
