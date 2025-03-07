@@ -33,14 +33,6 @@
           "name": "standard",
           "install_type": "fullstack",
           "working_directory": "solutions/standard",
-          "licenses": [
-            {
-              "id": "LICENSE",
-              "name": "LICENSE",
-              "type": "text/plain",
-              "description": "LICENSE"
-            }
-          ],
           "compliance": {
             "authority": "scc-v3",
             "profiles": [
