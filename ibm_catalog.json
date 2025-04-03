@@ -91,7 +91,6 @@
               "key": "ibmcloud_api_key",
               "required": true
             },
-
             {
               "key": "enable_platform_metrics",
               "required": false,
@@ -122,8 +121,7 @@
             },
             {
               "key": "prefix",
-              "required": true,
-              "description": "The prefix to add to all resources that this solution creates (e.g `prod`, `test`, `dev`). To not use any prefix value, you can enter the string `__NULL__`."
+              "required": true
             },
             {
               "key": "use_existing_resource_group",
