@@ -539,7 +539,7 @@
             },
             {
               "key": "existing_kms_instance_crn",
-              "required": false
+              "required": true
             },
             {
               "key": "cos_key_name",
