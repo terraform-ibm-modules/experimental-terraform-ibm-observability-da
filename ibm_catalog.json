@@ -732,7 +732,7 @@
             {
               "name": "deploy-arch-ibm-account-infra-base",
               "id": "63641cec-6093-4b4f-b7b0-98d2f4185cd6-global",
-              "version": "^v2.0.5",
+              "version": "^v2.0.6",
               "flavors": [
                 "resource-group-only"
               ],
