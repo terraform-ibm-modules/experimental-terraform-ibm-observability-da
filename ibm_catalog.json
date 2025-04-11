@@ -732,16 +732,16 @@
             {
               "name": "deploy-arch-ibm-account-infra-base",
               "id": "63641cec-6093-4b4f-b7b0-98d2f4185cd6-global",
-              "version": "^v1.19.0",
+              "version": "^v2.0.6",
               "flavors": [
-                "standard"
+                "resource-group-only"
               ],
               "catalog_id": "7a4d68b4-cf8b-40cd-a3d1-f49aff526eb3",
               "optional": true,
               "on_by_default": true,
               "input_mapping": [
                 {
-                  "dependency_output": "observability_resource_group_name",
+                  "dependency_output": "global_resource_group_name",
                   "version_input": "resource_group_name"
                 },
                 {
@@ -749,9 +749,18 @@
                   "version_input": "use_existing_resource_group"
                 },
                 {
+                  "dependency_input": "provider_visibility",
+                  "version_input": "provider_visibility",
+                  "reference_version": true
+                },
+                {
                   "dependency_input": "prefix",
                   "version_input": "prefix",
                   "reference_version": true
+                },
+                {
+                  "dependency_input": "global_resource_group_name",
+                  "value": "observability-rg"
                 }
               ],
               "ignore_auto_referencing": [
