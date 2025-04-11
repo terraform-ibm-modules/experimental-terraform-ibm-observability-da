@@ -741,7 +741,7 @@
               "on_by_default": true,
               "input_mapping": [
                 {
-                  "dependency_output": "observability_resource_group_name",
+                  "dependency_output": "global_resource_group_name",
                   "version_input": "resource_group_name"
                 },
                 {
