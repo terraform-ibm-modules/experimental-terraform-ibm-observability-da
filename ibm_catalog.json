@@ -97,11 +97,6 @@
               "default_value": false
             },
             {
-              "key": "enable_platform_logs",
-              "required": false,
-              "default_value": false
-            },
-            {
               "key": "provider_visibility",
               "required": false,
               "options": [
@@ -580,6 +575,9 @@
             {
               "key": "metrics_router_routes",
               "required": false
+            },
+            {
+              "key": "metrics_router_settings"
             }
           ],
           "outputs": [
