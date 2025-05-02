@@ -230,7 +230,7 @@ variable "metrics_router_routes" {
 variable "enable_metrics_routing_to_cloud_monitoring" {
   type        = bool
   description = "Whether to enable metrics routing from IBM Cloud Metric Routing to Cloud Monitoring."
-  default     = true
+  default     = false
 }
 
 ##############################################################################
