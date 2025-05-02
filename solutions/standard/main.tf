@@ -1,6 +1,9 @@
 #######################################################################################################################
 # Local Variables
 #######################################################################################################################
+locals {
+  prefix = var.prefix != null ? (var.prefix != "" ? var.prefix : null) : null
+}
 
 locals {
 
@@ -15,10 +18,10 @@ locals {
 
   default_cos_region = var.cos_region != null ? var.cos_region : var.region
 
-  cos_key_ring_name           = var.prefix != null ? "${var.prefix}-${var.cos_key_ring_name}" : var.cos_key_ring_name
-  cos_key_name                = var.prefix != null ? "${var.prefix}-${var.cos_key_name}" : var.cos_key_name
-  log_archive_cos_bucket_name = var.prefix != null ? "${var.prefix}-${var.log_archive_cos_bucket_name}" : var.log_archive_cos_bucket_name
-  at_cos_target_bucket_name   = var.prefix != null ? "${var.prefix}-${var.at_cos_target_bucket_name}" : var.at_cos_target_bucket_name
+  cos_key_ring_name           = try("${local.prefix}-${var.cos_key_ring_name}", var.cos_key_ring_name)
+  cos_key_name                = try("${local.prefix}-${var.cos_key_name}", var.cos_key_name)
+  log_archive_cos_bucket_name = try("${local.prefix}-${var.log_archive_cos_bucket_name}", var.log_archive_cos_bucket_name)
+  at_cos_target_bucket_name   = try("${local.prefix}-${var.at_cos_target_bucket_name}", var.at_cos_target_bucket_name)
 
   cos_instance_crn  = var.existing_cos_instance_crn != null ? var.existing_cos_instance_crn : length(module.cos_instance) != 0 ? module.cos_instance[0].cos_instance_crn : null
   cos_instance_guid = var.existing_cos_instance_crn == null ? length(module.cos_instance) != 0 ? module.cos_instance[0].cos_instance_guid : null : element(split(":", var.existing_cos_instance_crn), length(split(":", var.existing_cos_instance_crn)) - 3)
@@ -49,12 +52,12 @@ locals {
   cos_target_bucket_name     = var.existing_at_cos_target_bucket_name != null ? var.existing_at_cos_target_bucket_name : var.enable_at_event_routing_to_cos_bucket ? module.cos_bucket[0].buckets[local.at_cos_target_bucket_name].bucket_name : null
   cos_resource_group_id      = var.cos_resource_group_name != null ? module.cos_resource_group[0].resource_group_id : module.resource_group.resource_group_id
   cos_target_bucket_endpoint = var.existing_at_cos_target_bucket_endpoint != null ? var.existing_at_cos_target_bucket_endpoint : var.enable_at_event_routing_to_cos_bucket ? module.cos_bucket[0].buckets[local.at_cos_target_bucket_name].s3_endpoint_private : null
-  cos_target_name            = var.prefix != null ? "${var.prefix}-cos-target" : "cos-target"
-  cloud_logs_target_name     = var.prefix != null ? "${var.prefix}-cloud-logs-target" : "cloud-logs-target"
-  at_cos_route_name          = var.prefix != null ? "${var.prefix}-at-cos-route" : "at-cos-route"
-  at_cloud_logs_route_name   = var.prefix != null ? "${var.prefix}-at-cloud-logs-route" : "at-cloud-logs-route"
-  metric_router_target_name  = var.prefix != null ? "${var.prefix}-cloud-monitoring-target" : "cloud-monitoring-target"
-  metric_router_route_name   = var.prefix != null ? "${var.prefix}-metric-routing-route" : "metric-routing-route"
+  cos_target_name            = try("${local.prefix}-cos-target", "cos-target")
+  cloud_logs_target_name     = try("${local.prefix}-cloud-logs-target", "cloud-logs-target")
+  at_cos_route_name          = try("${local.prefix}-at-cos-route", "at-cos-route")
+  at_cloud_logs_route_name   = try("${local.prefix}-at-cloud-logs-route", "at-cloud-logs-route")
+  metric_router_target_name  = try("${local.prefix}-cloud-monitoring-target", "cloud-monitoring-target")
+  metric_router_route_name   = try("${local.prefix}-metric-routing-route", "metric-routing-route")
 
   default_metrics_router_route = var.enable_metrics_routing_to_cloud_monitoring ? [{
     name = local.metric_router_route_name
@@ -66,6 +69,13 @@ locals {
       inclusion_filters = []
     }]
   }] : []
+  metrics_router_settings = {
+    default_targets           = []
+    primary_metadata_region   = var.region
+    backup_metadata_region    = null
+    permitted_target_regions  = []
+    private_api_endpoint_only = false
+  }
 
   archive_bucket_config = var.manage_log_archive_cos_bucket ? {
     class = var.log_archive_cos_bucket_class
@@ -131,13 +141,13 @@ locals {
 
 
   # Cloud Logs data bucket
-  cloud_log_data_bucket = var.prefix != null ? "${var.prefix}-${var.cloud_log_data_bucket_name}" : var.cloud_log_data_bucket_name
+  cloud_log_data_bucket = try("${local.prefix}-${var.cloud_log_data_bucket_name}", var.cloud_log_data_bucket_name)
 
   parsed_log_data_bucket_name         = var.existing_cloud_logs_data_bucket_crn != null ? split(":", var.existing_cloud_logs_data_bucket_crn) : []
   existing_cloud_log_data_bucket_name = length(local.parsed_log_data_bucket_name) > 0 ? local.parsed_log_data_bucket_name[1] : null
 
   # Cloud Logs metrics bucket
-  cloud_log_metrics_bucket = var.prefix != null ? "${var.prefix}-${var.cloud_log_metrics_bucket_name}" : var.cloud_log_metrics_bucket_name
+  cloud_log_metrics_bucket = try("${local.prefix}-${var.cloud_log_metrics_bucket_name}", var.cloud_log_metrics_bucket_name)
 
   parsed_log_metrics_bucket_name         = var.existing_cloud_logs_metrics_bucket_crn != null ? split(":", var.existing_cloud_logs_metrics_bucket_crn) : []
   existing_cloud_log_metrics_bucket_name = length(local.parsed_log_metrics_bucket_name) > 0 ? local.parsed_log_metrics_bucket_name[1] : null
@@ -156,8 +166,8 @@ locals {
 
 module "resource_group" {
   source                       = "terraform-ibm-modules/resource-group/ibm"
-  version                      = "1.1.6"
-  resource_group_name          = var.use_existing_resource_group == false ? (var.prefix != null ? "${var.prefix}-${var.resource_group_name}" : var.resource_group_name) : null
+  version                      = "1.2.0"
+  resource_group_name          = var.use_existing_resource_group == false ? (try("${local.prefix}-${var.resource_group_name}", var.resource_group_name)) : null
   existing_resource_group_name = var.use_existing_resource_group == true ? var.resource_group_name : null
 }
 
@@ -167,8 +177,8 @@ module "cos_resource_group" {
     ibm = ibm.cos
   }
   source              = "terraform-ibm-modules/resource-group/ibm"
-  version             = "1.1.6"
-  resource_group_name = var.prefix != null ? "${var.prefix}-${var.cos_resource_group_name}" : var.cos_resource_group_name
+  version             = "1.2.0"
+  resource_group_name = try("${local.prefix}-${var.cos_resource_group_name}", var.cos_resource_group_name)
 }
 
 #######################################################################################################################
@@ -176,8 +186,8 @@ module "cos_resource_group" {
 #######################################################################################################################
 
 locals {
-  cloud_monitoring_instance_name = var.prefix != null ? "${var.prefix}-${var.cloud_monitoring_instance_name}" : var.cloud_monitoring_instance_name
-  cloud_logs_instance_name       = var.prefix != null ? "${var.prefix}-${var.cloud_logs_instance_name}" : var.cloud_logs_instance_name
+  cloud_monitoring_instance_name = try("${local.prefix}-${var.cloud_monitoring_instance_name}", var.cloud_monitoring_instance_name)
+  cloud_logs_instance_name       = try("${local.prefix}-${var.cloud_logs_instance_name}", var.cloud_logs_instance_name)
   cloud_logs_data_bucket_crn     = var.existing_cloud_logs_data_bucket_crn != null ? var.existing_cloud_logs_data_bucket_crn : module.cos_bucket[0].buckets[local.cloud_log_data_bucket].bucket_crn
   cloud_log_metrics_bucket_crn   = var.existing_cloud_logs_metrics_bucket_crn != null ? var.existing_cloud_logs_metrics_bucket_crn : module.cos_bucket[0].buckets[local.cloud_log_metrics_bucket].bucket_crn
   cloud_logs_buckets             = [local.cloud_logs_data_bucket_crn, local.cloud_log_metrics_bucket_crn]
@@ -242,7 +252,7 @@ module "cloud_monitoring_crn_parser" {
 module "observability_instance" {
   depends_on        = [time_sleep.wait_for_atracker_cos_authorization_policy]
   source            = "terraform-ibm-modules/observability-instances/ibm"
-  version           = "3.4.2"
+  version           = "3.5.2"
   region            = var.region
   resource_group_id = module.resource_group.resource_group_id
 
@@ -258,7 +268,6 @@ module "observability_instance" {
   cloud_logs_provision         = var.cloud_logs_provision
   cloud_logs_instance_name     = local.cloud_logs_instance_name
   cloud_logs_plan              = "standard"
-  enable_platform_logs         = var.enable_platform_logs
   cloud_logs_access_tags       = var.cloud_logs_access_tags
   cloud_logs_tags              = var.cloud_logs_tags
   cloud_logs_service_endpoints = "public-and-private"
@@ -266,22 +275,32 @@ module "observability_instance" {
   cloud_logs_policies          = var.cloud_logs_policies
   cloud_logs_data_storage = var.cloud_logs_provision ? {
     logs_data = {
-      enabled              = true
-      bucket_crn           = local.cloud_logs_data_bucket_crn
-      bucket_endpoint      = var.existing_cloud_logs_data_bucket_endpoint != null ? var.existing_cloud_logs_data_bucket_endpoint : module.cos_bucket[0].buckets[local.cloud_log_data_bucket].s3_endpoint_direct
-      skip_cos_auth_policy = var.ibmcloud_cos_api_key != null ? true : var.skip_cloud_logs_cos_auth_policy
+      enabled         = true
+      bucket_crn      = local.cloud_logs_data_bucket_crn
+      bucket_endpoint = var.existing_cloud_logs_data_bucket_endpoint != null ? var.existing_cloud_logs_data_bucket_endpoint : module.cos_bucket[0].buckets[local.cloud_log_data_bucket].s3_endpoint_direct
+      # Even though we're only performing a comparison (var.ibmcloud_cos_api_key != null),
+      # Terraform treats the entire value as "tainted" due to sensitivity.
+      # Later, in the cloud_logs module, where the data_storage input variable is used in a for_each loop,
+      # the loop fails with the error: "Sensitive values, or values derived from sensitive values, cannot be used as for_each arguments."
+      # However, since we use nonsensitive() solely for logical comparison, we are not exposing any secret values to logs and it's safe to use. Issue https://github.ibm.com/GoldenEye/issues/issues/13562.
+      skip_cos_auth_policy = nonsensitive(var.ibmcloud_cos_api_key) != null ? true : var.skip_cloud_logs_cos_auth_policy
     },
     metrics_data = {
-      enabled              = true
-      bucket_crn           = local.cloud_log_metrics_bucket_crn
-      bucket_endpoint      = var.existing_cloud_logs_metrics_bucket_endpoint != null ? var.existing_cloud_logs_metrics_bucket_endpoint : module.cos_bucket[0].buckets[local.cloud_log_metrics_bucket].s3_endpoint_direct
-      skip_cos_auth_policy = var.ibmcloud_cos_api_key != null ? true : var.skip_cloud_logs_cos_auth_policy
+      enabled         = true
+      bucket_crn      = local.cloud_log_metrics_bucket_crn
+      bucket_endpoint = var.existing_cloud_logs_metrics_bucket_endpoint != null ? var.existing_cloud_logs_metrics_bucket_endpoint : module.cos_bucket[0].buckets[local.cloud_log_metrics_bucket].s3_endpoint_direct
+      # Even though we're only performing a comparison (var.ibmcloud_cos_api_key != null),
+      # Terraform treats the entire value as "tainted" due to sensitivity.
+      # Later, in the cloud_logs module, where the data_storage input variable is used in a for_each loop,
+      # the loop fails with the error: "Sensitive values, or values derived from sensitive values, cannot be used as for_each arguments."
+      # However, since we use nonsensitive() solely for logical comparison, we are not exposing any secret values to logs and it's safe to use. Issue https://github.ibm.com/GoldenEye/issues/issues/13562.
+      skip_cos_auth_policy = nonsensitive(var.ibmcloud_cos_api_key) != null ? true : var.skip_cloud_logs_cos_auth_policy
     }
   } : null
   cloud_logs_existing_en_instances = [for index, _ in local.cloud_logs_existing_en_instances : {
     en_instance_id      = module.en_crn_parser[index]["service_instance"]
     en_region           = module.en_crn_parser[index]["region"]
-    en_integration_name = var.prefix != null ? "${var.prefix}-${local.cloud_logs_existing_en_instances[index]["integration_name"]}" : local.cloud_logs_existing_en_instances[index]["integration_name"]
+    en_integration_name = try("${local.prefix}-${local.cloud_logs_existing_en_instances[index]["integration_name"]}", local.cloud_logs_existing_en_instances[index]["integration_name"])
     skip_en_auth_policy = local.cloud_logs_existing_en_instances[index]["skip_en_auth_policy"]
   }]
   skip_logs_routing_auth_policy = var.skip_logs_routing_auth_policy
@@ -323,6 +342,8 @@ module "observability_instance" {
   ] : []
 
   metrics_router_routes = var.enable_metrics_routing_to_cloud_monitoring ? (length(var.metrics_router_routes) != 0 ? var.metrics_router_routes : local.default_metrics_router_route) : []
+
+  metrics_router_settings = var.enable_metrics_routing_to_cloud_monitoring ? (var.metrics_router_settings != null ? var.metrics_router_settings : local.metrics_router_settings) : null
 }
 
 resource "time_sleep" "wait_for_atracker_cos_authorization_policy" {
@@ -359,7 +380,7 @@ module "kms" {
   }
   count                       = (var.existing_cos_kms_key_crn != null || (length(coalesce(local.buckets_config, [])) == 0)) ? 0 : 1 # no need to create any KMS resources if passing an existing key, or bucket
   source                      = "terraform-ibm-modules/kms-all-inclusive/ibm"
-  version                     = "4.19.1"
+  version                     = "5.0.1"
   create_key_protect_instance = false
   region                      = local.kms_region
   existing_kms_instance_crn   = var.existing_kms_instance_crn
@@ -449,10 +470,10 @@ module "cos_instance" {
   }
   count                    = var.existing_cos_instance_crn == null && length(coalesce(local.buckets_config, [])) != 0 ? 1 : 0 # no need to call COS module if consumer is using existing COS instance
   source                   = "terraform-ibm-modules/cos/ibm//modules/fscloud"
-  version                  = "8.16.4"
+  version                  = "8.21.17"
   resource_group_id        = local.cos_resource_group_id
   create_cos_instance      = true
-  cos_instance_name        = var.prefix != null ? "${var.prefix}-${var.cos_instance_name}" : var.cos_instance_name
+  cos_instance_name        = try("${local.prefix}-${var.cos_instance_name}", var.cos_instance_name)
   cos_tags                 = var.cos_instance_tags
   existing_cos_instance_id = var.existing_cos_instance_crn
   access_tags              = var.cos_instance_access_tags
@@ -466,7 +487,7 @@ module "cos_bucket" {
   }
   count   = length(coalesce(local.buckets_config, [])) != 0 ? 1 : 0 # no need to call COS module if consumer is using existing COS bucket
   source  = "terraform-ibm-modules/cos/ibm//modules/buckets"
-  version = "8.16.4"
+  version = "8.21.17"
   bucket_configs = [
     for value in local.buckets_config :
     {
